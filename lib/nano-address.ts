@@ -98,7 +98,7 @@ export default class NanoAddress {
 			throw TypeError('Address must be a string.')
 		}
 
-		const allowedPrefixes: string[] = ['nano', 'xrb', 'ban', 'xdg', 'ana', 'paw']
+		const allowedPrefixes: string[] = ['nano', 'xrb', 'xro', 'ban', 'xdg', 'ana', 'paw']
 		const pattern = new RegExp(
 			`^(${allowedPrefixes.join('|')})_[13]{1}[13456789abcdefghijkmnopqrstuwxyz]{59}$`,
 		)
