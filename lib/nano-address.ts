@@ -45,8 +45,7 @@ export default class NanoAddress {
 
 	static addressToPublicKey = (input: string): string => {
 		const cleaned = input
-			.replace('nano_', '')
-			.replace('xrb_', '')
+			.replace(/.*_/, '') 
 		const publicKeyBytes = NanoAddress.decodeNanoBase32(cleaned)
 		return Convert.ab2hex(publicKeyBytes).slice(0, 64)
 	}
@@ -98,11 +97,9 @@ export default class NanoAddress {
 			throw TypeError('Address must be a string.')
 		}
 
-		const allowedPrefixes: string[] = ['nano', 'xrb', 'xro', 'ban', 'xdg', 'ana', 'paw']
 		const pattern = new RegExp(
-			`^(${allowedPrefixes.join('|')})_[13]{1}[13456789abcdefghijkmnopqrstuwxyz]{59}$`,
+			`^[a-z0-9]{2,6}_[13]{1}[13456789abcdefghijkmnopqrstuwxyz]{59}$`, // allow any alphanumeric prefix of length 2-6
 		)
-
 		if (!pattern.test(address)) {
 			return false
 		}
