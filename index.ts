@@ -295,6 +295,29 @@ const tools = {
 				block.link)
 	},
 
+
+	/**
+	 * Verify the block hash
+	 * Usefull for verifying frontier from account_info
+	 *
+	 * @param {BlockData} block The block to verify
+	 * @param {string} hash The hash to verify
+	 * @returns {boolean} valid or not
+	 */
+	verifyBlockHash: (block: BlockData, hash: string): boolean => {
+		const preamble = 0x6.toString().padStart(64, '0')
+		const generatedHash = Signer.generateHash([
+			preamble,
+			NanoAddress.nanoAddressToHexString(block.account),
+			block.previous,
+			NanoAddress.nanoAddressToHexString(block.representative),
+			Convert.dec2hex(block.balance, 16).toUpperCase(),
+			block.link
+		])
+		const generatedHashHex = Convert.ab2hex(generatedHash).toUpperCase()
+		return hash.toUpperCase() === generatedHashHex
+	},
+
 	/**
 	 * Validate a Nano address
 	 *
