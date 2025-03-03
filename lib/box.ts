@@ -66,4 +66,58 @@ export default class Box {
 		return Convert.encodeUTF8(decrypted)
 	}
 
+	static encryptFile(message: Uint8Array, address: string, privateKey: string) {
+		if (!message) {
+			throw new Error('No message to encrypt')
+		}
+
+		const publicKey = NanoAddress.addressToPublicKey(address)
+		const { privateKey: convertedPrivateKey, publicKey: convertedPublicKey } = new Ed25519().convertKeys({
+			privateKey,
+			publicKey,
+		})
+
+		const nonce = Convert.hex2ab(lib.WordArray.random(this.NONCE_LENGTH).toString())
+		const encrypted = new Curve25519().box(
+			message,
+			nonce,
+			Convert.hex2ab(convertedPublicKey),
+			Convert.hex2ab(convertedPrivateKey),
+		)
+
+		const full = new Uint8Array(nonce.length + encrypted.length)
+		full.set(nonce)
+		full.set(encrypted, nonce.length)
+
+		return full
+	}
+
+	static decryptFile(encrypted: Uint8Array, address: string, privateKey: string) {
+		if (!encrypted) {
+			throw new Error('No message to decrypt')
+		}
+
+		const publicKey = NanoAddress.addressToPublicKey(address)
+		const { privateKey: convertedPrivateKey, publicKey: convertedPublicKey } = new Ed25519().convertKeys({
+			privateKey,
+			publicKey,
+		})
+
+		const nonce = encrypted.slice(0, this.NONCE_LENGTH)
+		const encryptedMessage = encrypted.slice(this.NONCE_LENGTH, encrypted.length)
+
+		const decrypted = new Curve25519().boxOpen(
+			encryptedMessage,
+			nonce,
+			Convert.hex2ab(convertedPublicKey),
+			Convert.hex2ab(convertedPrivateKey),
+		)
+
+		if (!decrypted) {
+			throw new Error('Could not decrypt message')
+		}
+
+		return decrypted
+	}
+
 }

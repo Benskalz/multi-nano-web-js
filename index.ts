@@ -409,6 +409,17 @@ const box = {
 	 */
 	decrypt: (encrypted: string, address: string, privateKey: string): string => {
 		return Box.decrypt(encrypted, address, privateKey)
+	},
+
+	/**
+	 * Encrypt directly binary data for higher performance on large files
+	 */
+	encryptFile: (message: Uint8Array, address: string, privateKey: string): Uint8Array => {
+		return Box.encryptFile(message, address, privateKey)
+	},
+
+	decryptFile: (encrypted: Uint8Array, address: string, privateKey: string): Uint8Array => {
+		return Box.decryptFile(encrypted, address, privateKey)
 	}
 
 }
