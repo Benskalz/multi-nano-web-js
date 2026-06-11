@@ -1,5 +1,5 @@
 //@ts-ignore
-import { PBKDF2, SHA256, algo, enc, lib } from 'crypto-js'
+import { PBKDF2, SHA256, algo, enc } from 'crypto-js'
 
 import Convert from './util/convert'
 import Util from './util/util'
@@ -169,7 +169,14 @@ export default class Bip39Mnemonic {
 	}
 
 	private static randomHex = (length: number): string => {
-		return lib.WordArray.random(length).toString()
+		// @ts-ignore
+		if (typeof crypto === 'undefined' || typeof crypto.getRandomValues !== 'function') {
+			throw new Error('crypto.getRandomValues is not available in this environment')
+		}
+		const bytes = new Uint8Array(length)
+		// @ts-ignore
+		crypto.getRandomValues(bytes)
+		return Array.from(bytes, b => b.toString(16).padStart(2, '0')).join('')
 	}
 
 	private static calculateChecksum = (entropyHex: string): string => {

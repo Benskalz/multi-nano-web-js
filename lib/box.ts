@@ -1,6 +1,4 @@
 import * as base64 from 'byte-base64'
-//@ts-ignore
-import { lib } from 'crypto-js'
 
 import Ed25519 from './ed25519'
 import NanoAddress from './nano-address'
@@ -22,7 +20,8 @@ export default class Box {
 			publicKey,
 		})
 
-		const nonce = Convert.hex2ab(lib.WordArray.random(this.NONCE_LENGTH).toString())
+		// @ts-ignore
+		const nonce = crypto.getRandomValues(new Uint8Array(this.NONCE_LENGTH))
 		const encrypted = new Curve25519().box(
 			Convert.decodeUTF8(message),
 			nonce,
@@ -77,7 +76,8 @@ export default class Box {
 			publicKey,
 		})
 
-		const nonce = Convert.hex2ab(lib.WordArray.random(this.NONCE_LENGTH).toString())
+		// @ts-ignore
+		const nonce = crypto.getRandomValues(new Uint8Array(this.NONCE_LENGTH))
 		const encrypted = new Curve25519().box(
 			message,
 			nonce,
